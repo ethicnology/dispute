@@ -1,0 +1,28 @@
+name: dispute
+version: 1.0.0
+summary: A cross-platform client for Nostr
+description: A cross-platform client for Nostr
+
+confinement: strict
+base: core18
+grade: stable
+
+slots:
+  dbus-dispute: 
+    interface: dbus
+    bus: session
+    name: org.ethicnology.dispute
+    
+apps:
+  dispute:
+    command: dispute
+    extensions: [flutter-master]
+    plugs:
+    - network
+    slots:
+      - dbus-dispute
+parts:
+  dispute:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart
