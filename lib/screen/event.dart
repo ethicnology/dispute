@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dispute/main.dart';
 import 'package:dispute/model/profile.dart';
@@ -7,6 +6,7 @@ import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
@@ -22,12 +22,10 @@ class EventScreenState extends State<EventScreen> {
   @override
   Widget build(BuildContext context) {
     final profil = context.watch<Profile>();
-    bool sent = false;
     if (wsEvent.isNotEmpty) {
       var json = jsonDecode(wsEvent);
       if (json[0] == "OK" && json[2] == true) {
         logger.w(json);
-        sent = true;
       }
     }
 
@@ -62,17 +60,16 @@ class EventScreenState extends State<EventScreen> {
                           content: _controller.text,
                           privkey: profil.keys.private,
                         );
-                        WebSocket webSocket = await WebSocket.connect(
-                          profil.relay,
+                        final channel = WebSocketChannel.connect(
+                          Uri.parse(profil.relay),
                         );
-                        webSocket.add(event.serialize());
+                        channel.sink.add(event.serialize());
                         await Future.delayed(const Duration(seconds: 1));
-                        webSocket.listen((event) {
-                          setState(() {
-                            wsEvent = event;
-                          });
-                        });
-                        await webSocket.close();
+                        channel.sink.close();
+                        displaySnackBar(
+                          context,
+                          "The event is sent, go back to the wall",
+                        );
                       } else {
                         displaySnackBar(
                           context,
@@ -83,7 +80,6 @@ class EventScreenState extends State<EventScreen> {
                     child: const Text('Send'),
                   ),
                 ),
-                if (sent) const Text('Sent !')
               ],
             ),
           ),
