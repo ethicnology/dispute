@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=dispute
+Comment=A cross-platform client for Nostr
+Exec=dispute 
+Icon=${SNAP}/meta/gui/dispute.png
+Terminal=false
+Type=Application
+Categories=Communication;
