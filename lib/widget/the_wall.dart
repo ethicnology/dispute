@@ -35,7 +35,7 @@ class TheWallState extends State<TheWallWidget> {
               var data = jsonDecode(snapshot.data);
               if (data[0] == "EVENT") {
                 events.add(Event.fromJson(data[2], subscriptionId: data[1]));
-                events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                // events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
                 //                 String log = '''
                 // id     : ${data[2]['id']}
                 // kind   : ${data[2]['kind']}
@@ -47,6 +47,7 @@ class TheWallState extends State<TheWallWidget> {
 
               return ListView.builder(
                 shrinkWrap: true,
+                reverse: true,
                 itemCount: events.length,
                 itemBuilder: (context, index) {
                   return TweetWidget(
