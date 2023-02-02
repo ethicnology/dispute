@@ -6,6 +6,8 @@ import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
+import '../constants/constants.dart';
+
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
 
@@ -124,6 +126,11 @@ class ProfilScreenState extends State<ProfilScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8),
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonBackgroundColor,
+                        minimumSize: const Size(100, 50),
+                        maximumSize: const Size(100, 50),
+                      ),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           profil.keys = Keychain(privkeyInput.text);
