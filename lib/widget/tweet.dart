@@ -18,27 +18,12 @@ class TweetWidget extends StatelessWidget {
     required this.text,
   });
 
-  String timeAgo(int secondsUnixTimestamp) {
-    final timestamp =
-        DateTime.fromMillisecondsSinceEpoch(secondsUnixTimestamp * 1000);
-    final duration = DateTime.now().difference(timestamp);
-    String timeAgo;
-    if (duration.inDays > 365) {
-      timeAgo = '${(duration.inDays / 365).floor()} years ago';
-    } else if (duration.inDays > 30) {
-      timeAgo = '${(duration.inDays / 30).floor()} months ago';
-    } else if (duration.inDays > 7) {
-      timeAgo = '${(duration.inDays / 7).floor()} weeks ago';
-    } else if (duration.inDays > 1) {
-      timeAgo = '${duration.inDays} days ago';
-    } else if (duration.inHours > 1) {
-      timeAgo = '${duration.inHours} hours ago';
-    } else if (duration.inMinutes > 1) {
-      timeAgo = '${duration.inMinutes} minutes ago';
-    } else {
-      timeAgo = '${duration.inSeconds} seconds ago';
-    }
-    return timeAgo;
+  String formatDate(int secondsUnixTimestamp) {
+    var date = DateTime.fromMillisecondsSinceEpoch(secondsUnixTimestamp * 1000,
+            isUtc: true)
+        .toLocal()
+        .toString();
+    return date.substring(0, date.length - 4);
   }
 
   @override
@@ -82,7 +67,7 @@ class TweetWidget extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '@$pseudonym · ${timeAgo(timestamp)}',
+                        '@$pseudonym · ${formatDate(timestamp)}',
                         style: const TextStyle(
                           color: Colors.white70,
                         ),

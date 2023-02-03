@@ -3,14 +3,9 @@ import 'package:dispute/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
-import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
 
 final logger = Logger();
-
-String generateSubscription() {
-  return '["REQ","${generate64RandomHexChars()}",{"kinds":[1],"since":${currentUnixTimestampSeconds() - 86400}}]';
-}
 
 void main() {
   runApp(

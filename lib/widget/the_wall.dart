@@ -34,16 +34,9 @@ class TheWallState extends State<TheWallWidget> {
               }
               var data = jsonDecode(snapshot.data);
               if (data[0] == "EVENT") {
-                events.add(Event.fromJson(data[2], subscriptionId: data[1]));
+                var event = Event.deserialize(data, verify: false);
+                events.add(event);
                 events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-                //                 String log = '''
-                // id     : ${data[2]['id']}
-                // kind   : ${data[2]['kind']}
-                // content: ${data[2]['content']}
-                // loaded : ${events.length}
-                //  ''';
-                //                 logger.d(log);
               }
 
               return ListView.builder(

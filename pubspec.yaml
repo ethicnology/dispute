@@ -32,8 +32,8 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.5
-  nostr: ^1.0.1
-  web_socket_channel: ^2.2.0
+  nostr: ^1.3.2
+  web_socket_channel: ^2.3.0
   logger: ^1.1.0
   google_fonts: ^4.0.1
 

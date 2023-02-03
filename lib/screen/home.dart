@@ -1,10 +1,10 @@
-import 'package:dispute/main.dart';
 import 'package:dispute/model/profile.dart';
 import 'package:dispute/screen/event.dart';
 import 'package:dispute/screen/profil.dart';
 import 'package:dispute/widget/the_wall.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
@@ -17,10 +17,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String projectUrl = 'https://github.com/ethicnology/dispute';
     final profil = context.watch<Profile>();
-    if (profil.relay.isEmpty) {
-      profil.init();
-      profil.channel.sink.add(generateSubscription());
-    }
+    profil.init();
+    profil.channel.sink.add(
+      Request(generate64RandomHexChars(), [
+        Filter(
+          kinds: [1],
+          since: currentUnixTimestampSeconds() - 86400,
+        )
+      ]).serialize(),
+    );
 
     return Scaffold(
       appBar: AppBar(

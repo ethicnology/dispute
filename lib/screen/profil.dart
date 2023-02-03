@@ -24,9 +24,6 @@ class ProfilScreenState extends State<ProfilScreen> {
   @override
   Widget build(BuildContext context) {
     final profil = context.watch<Profile>();
-    if (profil.relay.isEmpty) {
-      profil.init();
-    }
     relayInput.text = profil.relay;
     privkeyInput.text = profil.keys.private;
     pubkeyInput.text = profil.keys.public;
@@ -105,7 +102,6 @@ class ProfilScreenState extends State<ProfilScreen> {
                       ),
                     ),
                   TextFormField(
-                    enabled: false,
                     controller: relayInput,
                     keyboardType: TextInputType.url,
                     decoration: const InputDecoration(
@@ -135,6 +131,8 @@ class ProfilScreenState extends State<ProfilScreen> {
                         if (formKey.currentState!.validate()) {
                           profil.keys = Keychain(privkeyInput.text);
                           pubkeyInput.text = profil.keys.public; // update UI
+                          profil.relay = relayInput.text;
+                          profil.init();
                         }
                       },
                       child: const Text('Save'),
