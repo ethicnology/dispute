@@ -53,11 +53,6 @@ class EventScreenState extends State<EventScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       )),
-
-                  // decoration: const InputDecoration(
-                  //   border: OutlineInputBorder(),
-                  //   hintText: 'Write your message',
-                  // ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
