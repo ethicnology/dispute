@@ -36,6 +36,6 @@ paypal:  ethicnology@pm.me
 I'm also working on [dart-nostr](https://github.com/ethicnology/dart-nostr) and many others projects
 
 ## Screenshots
-![the-wall](https://github.com/ethicnology/dispute/blob/main/assets/the-wall.png)
-![event-sent](https://github.com/ethicnology/dispute/blob/main/assets/event-sent.png)
-![profile](https://github.com/ethicnology/dispute/blob/main/assets/profile.png)
+![1.1.0_wall](https://github.com/ethicnology/dispute/blob/main/assets/1.1.0_wall.png)
+![1.1.0_event](https://github.com/ethicnology/dispute/blob/main/assets/1.1.0_event.png)
+![1.1.0_profile](https://github.com/ethicnology/dispute/blob/main/assets/1.1.0_profile.png)
