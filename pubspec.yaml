@@ -36,6 +36,7 @@ dependencies:
   web_socket_channel: ^2.3.0
   logger: ^1.1.0
   google_fonts: ^4.0.1
+  crypto: ^3.0.2
 
 dev_dependencies:
   flutter_test:
