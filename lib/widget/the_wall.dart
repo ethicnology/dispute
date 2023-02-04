@@ -1,9 +1,24 @@
+import 'dart:collection';
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:dispute/widget/tweet.dart';
 import 'package:flutter/material.dart';
 import 'package:nostr/nostr.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+var spams = HashSet<String>();
+
+bool isSpam(Event event) {
+  var toHash = utf8.encode(event.content);
+  String hash = sha256.convert(toHash).toString();
+  if (spams.contains(hash)) {
+    print("${event.id} is a filtered spam");
+    return true;
+  }
+  spams.add(hash);
+  return false;
+}
 
 class TheWallWidget extends StatefulWidget {
   final WebSocketChannel channel;
@@ -35,8 +50,10 @@ class TheWallState extends State<TheWallWidget> {
               var data = jsonDecode(snapshot.data);
               if (data[0] == "EVENT") {
                 var event = Event.deserialize(data, verify: false);
-                events.add(event);
-                events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                if (!isSpam(event)) {
+                  events.add(event);
+                  events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                }
               }
 
               return ListView.builder(
