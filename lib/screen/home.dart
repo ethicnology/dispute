@@ -1,12 +1,14 @@
-import 'package:dispute/main.dart';
 import 'package:dispute/model/profile.dart';
 import 'package:dispute/screen/event.dart';
 import 'package:dispute/screen/profil.dart';
 import 'package:dispute/widget/the_wall.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+
+import '../constants/constants.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -15,10 +17,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String projectUrl = 'https://github.com/ethicnology/dispute';
     final profil = context.watch<Profile>();
-    if (profil.relay.isEmpty) {
-      profil.init();
-      profil.channel.sink.add(generateSubscription());
-    }
+    profil.init();
+    profil.channel.sink.add(
+      Request(generate64RandomHexChars(), [
+        Filter(
+          kinds: [1],
+          since: currentUnixTimestampSeconds() - 86400,
+        )
+      ]).serialize(),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -45,12 +52,21 @@ class HomeScreen extends StatelessWidget {
                 left: 10,
                 right: 10,
               ),
-              child: InkWell(
-                child: Text(projectUrl),
-                onTap: () {
-                  Clipboard.setData(ClipboardData(text: projectUrl));
-                  displaySnackBar(context, 'copied to clipboard: $projectUrl');
-                },
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonBackgroundColor,
+                  minimumSize: const Size(400, 40),
+                  maximumSize: const Size(400, 40),
+                ),
+                onPressed: () {},
+                child: InkWell(
+                  child: Text(projectUrl),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: projectUrl));
+                    displaySnackBar(
+                        context, 'copied to clipboard: $projectUrl');
+                  },
+                ),
               ),
             ),
             TheWallWidget(channel: profil.channel),
@@ -63,6 +79,9 @@ class HomeScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(color: buttonBorderColor, width: 3),
+                borderRadius: BorderRadius.circular(100)),
             tooltip: 'Send an event',
             heroTag: "send_event",
             child: const Icon(Icons.message),
@@ -75,6 +94,9 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(color: buttonBorderColor, width: 3),
+                borderRadius: BorderRadius.circular(100)),
             tooltip: 'Edit your profil',
             heroTag: "profil",
             child: const Icon(Icons.vpn_key),

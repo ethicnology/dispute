@@ -1,8 +1,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  
 # dispute
 
-A cross-platform client for Nostr
+A cross-platform client for Nostr showcasing [dart-nostr library](https://github.com/ethicnology/dart-nostr)
 
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/dispute)
 
 ## Disclaimer
 This app is in early development.  
@@ -34,6 +36,6 @@ paypal:  ethicnology@pm.me
 I'm also working on [dart-nostr](https://github.com/ethicnology/dart-nostr) and many others projects
 
 ## Screenshots
-![the-wall](https://github.com/ethicnology/dispute/blob/main/assets/the-wall.png)
-![event-sent](https://github.com/ethicnology/dispute/blob/main/assets/event-sent.png)
-![profile](https://github.com/ethicnology/dispute/blob/main/assets/profile.png)
+![1.1.0_wall](https://github.com/ethicnology/dispute/blob/main/assets/1.1.0_wall.png)
+![1.1.0_event](https://github.com/ethicnology/dispute/blob/main/assets/1.1.0_event.png)
+![1.1.0_profile](https://github.com/ethicnology/dispute/blob/main/assets/1.1.0_profile.png)
