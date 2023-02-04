@@ -1,3 +1,4 @@
+import 'package:dispute/constants/constants.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,78 +27,111 @@ class TweetWidget extends StatelessWidget {
     return date.substring(0, date.length - 4);
   }
 
+  int setColor() {
+    var pubKeyChars = pubkey.substring(0, 6);
+    var color = '0xff';
+    var result = '$color$pubKeyChars';
+    return int.parse(result);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: Container(
         decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          color: Colors.teal,
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          color: Colors.black,
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(10.0),
-              child: InkWell(
-                child: const CircleAvatar(
-                    // FIXME: backgroundImage: NetworkImage(avatar),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.all(10.0),
+                child: InkWell(
+                  child: CircleAvatar(
+                    radius: 22,
+                    backgroundColor: buttonBorderColor,
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Color(setColor()),
+                      // FIXME: backgroundImage: NetworkImage(avatar),
                     ),
-                onTap: () {
-                  displaySnackBar(context, "Soon In sha'Allah");
-                },
+                  ),
+                  onTap: () {
+                    displaySnackBar(context, "Soon In sha'Allah");
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 5.0),
-                        child: InkWell(
-                          child: Text(pubkey.substring(0, 8)),
-                          onTap: () {
-                            Clipboard.setData(ClipboardData(text: pubkey));
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(right: 5.0),
+                              child: InkWell(
+                                child: Text(
+                                  pubkey.substring(0, 8),
+                                ),
+                                onTap: () {
+                                  Clipboard.setData(
+                                      ClipboardData(text: pubkey));
+                                  displaySnackBar(
+                                      context, 'Copied to clipboard: $pubkey');
+                                },
+                              ),
+                            ),
+                            Text(
+                              '@$pseudonym',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.sailing,
+                            size: 14.0,
+                            color: Colors.white70,
+                          ),
+                          onPressed: () {
                             displaySnackBar(
-                                context, 'Copied to clipboard: $pubkey');
+                              context,
+                              "I'm useless for the moment",
+                            );
                           },
                         ),
-                      ),
-                      Text(
-                        '@$pseudonym · ${formatDate(timestamp)}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.sailing,
-                          size: 14.0,
-                          color: Colors.white70,
-                        ),
-                        onPressed: () {
-                          displaySnackBar(
-                            context,
-                            "I'm useless for the moment",
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  SelectableText(
-                    text,
-                    style: const TextStyle(
-                      color: Colors.white,
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            )
-          ],
+                    Text(
+                      formatDate(timestamp),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SelectableText(
+                      text,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
