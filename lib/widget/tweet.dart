@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 
 class TweetWidget extends StatelessWidget {
   final String avatar;
-  final String pseudonym;
   final String pubkey;
   final int timestamp;
   final String text;
@@ -13,7 +12,6 @@ class TweetWidget extends StatelessWidget {
   const TweetWidget({
     super.key,
     required this.avatar,
-    required this.pseudonym,
     required this.pubkey,
     required this.timestamp,
     required this.text,
@@ -57,7 +55,6 @@ class TweetWidget extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 20,
                       backgroundColor: Color(setColor()),
-                      // FIXME: backgroundImage: NetworkImage(avatar),
                     ),
                   ),
                   onTap: () {
@@ -90,7 +87,7 @@ class TweetWidget extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '@$pseudonym',
+                              formatDate(timestamp),
                               style: const TextStyle(
                                 color: Colors.white70,
                               ),
@@ -111,12 +108,6 @@ class TweetWidget extends StatelessWidget {
                           },
                         ),
                       ],
-                    ),
-                    Text(
-                      formatDate(timestamp),
-                      style: const TextStyle(
-                        color: Colors.white70,
-                      ),
                     ),
                     const SizedBox(
                       height: 10,

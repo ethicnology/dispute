@@ -62,7 +62,6 @@ class TheWallState extends State<TheWallWidget> {
                 itemBuilder: (context, index) {
                   return TweetWidget(
                     avatar: '',
-                    pseudonym: 'NotSupportedYet',
                     pubkey: events[index].pubkey,
                     timestamp: events[index].createdAt,
                     text: events[index].content,
