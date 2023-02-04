@@ -8,6 +8,8 @@ import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../constants/constants.dart';
+
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
 
@@ -45,13 +47,21 @@ class EventScreenState extends State<EventScreen> {
                   controller: _controller,
                   maxLines: null,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Write your message',
-                  ),
+                      labelText: "Message",
+                      hintText: "Write your message",
+                      filled: false,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      )),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonBackgroundColor,
+                      minimumSize: const Size(100, 50),
+                      maximumSize: const Size(100, 50),
+                    ),
                     onPressed: () async {
                       if (profil.keys.private.length == 64) {
                         Event event = Event.from(
