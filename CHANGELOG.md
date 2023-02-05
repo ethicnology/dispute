@@ -17,3 +17,6 @@
 - feat: avatar color based on first 6 chars of the event pubkey @muffarah
 - feat: spam filter based on content duplication
 - refactor: tweet remove pseudonym placeholder
+
+## 1.1.1
+- put my own relay as default
