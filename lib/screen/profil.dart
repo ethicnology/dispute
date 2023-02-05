@@ -1,5 +1,6 @@
 import 'package:dispute/main.dart';
 import 'package:dispute/model/profile.dart';
+import 'package:dispute/screen/home.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:nostr/nostr.dart';
@@ -161,7 +162,8 @@ class ProfilScreenState extends State<ProfilScreen> {
                             profil.keys = Keychain(privkeyInput.text);
                             pubkeyInput.text = profil.keys.public; // update UI
                             profil.relay = relayInput.text;
-                            profil.init();
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (_) => const HomeScreen()));
                           }
                         },
                         child: const Text('Save'),

@@ -4,9 +4,9 @@ import 'package:dispute/screen/profil.dart';
 import 'package:dispute/widget/the_wall.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:nostr/nostr.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../constants/constants.dart';
 
@@ -17,16 +17,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String projectUrl = 'https://github.com/ethicnology/dispute';
     final profil = context.watch<Profile>();
-    profil.init();
-    profil.channel.sink.add(
-      Request(generate64RandomHexChars(), [
-        Filter(
-          kinds: [1],
-          since: currentUnixTimestampSeconds() - 86400,
-        )
-      ]).serialize(),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('nostr dispute'),
@@ -69,7 +59,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            TheWallWidget(channel: profil.channel),
+            TheWallWidget(
+              channel: WebSocketChannel.connect(Uri.parse(profil.relay)),
+            ),
           ],
         ),
       ),

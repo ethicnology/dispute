@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:dispute/main.dart';
+import 'dart:io';
 import 'package:dispute/model/profile.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,25 @@ import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../constants/constants.dart';
+
+void sendEvent(Uri relay, Event event) {
+  WebSocketChannel channel = WebSocketChannel.connect(relay);
+  channel.sink.add(event.serialize());
+  sleep(const Duration(seconds: 1));
+  channel.stream.listen((response) {
+    if (response.isNotEmpty) {
+      var json = jsonDecode(response);
+      var msg = Message.deserialize(json);
+      if (msg.type == "OK") {
+      } else {
+        throw Exception(msg);
+      }
+    } else {
+      throw Exception("Empty response");
+    }
+  });
+  channel.sink.close();
+}
 
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
@@ -19,17 +37,10 @@ class EventScreen extends StatefulWidget {
 
 class EventScreenState extends State<EventScreen> {
   final TextEditingController _controller = TextEditingController();
-  String wsEvent = '';
 
   @override
   Widget build(BuildContext context) {
     final profil = context.watch<Profile>();
-    if (wsEvent.isNotEmpty) {
-      var json = jsonDecode(wsEvent);
-      if (json[0] == "OK" && json[2] == true) {
-        logger.w(json);
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -70,16 +81,16 @@ class EventScreenState extends State<EventScreen> {
                           content: _controller.text,
                           privkey: profil.keys.private,
                         );
-                        final channel = WebSocketChannel.connect(
-                          Uri.parse(profil.relay),
-                        );
-                        channel.sink.add(event.serialize());
-                        await Future.delayed(const Duration(seconds: 1));
-                        channel.sink.close();
-                        displaySnackBar(
-                          context,
-                          "The event is sent, go back to the wall",
-                        );
+                        try {
+                          sendEvent(Uri.parse(profil.relay), event);
+                          displaySnackBar(context, "Event is sent");
+                          Navigator.of(context).pop(false);
+                        } catch (e) {
+                          displaySnackBar(
+                            context,
+                            "Event not sent: $e",
+                          );
+                        }
                       } else {
                         displaySnackBar(
                           context,
