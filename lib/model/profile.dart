@@ -5,7 +5,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Profile with ChangeNotifier {
   Keychain keys = Keychain.generate();
-  String relay = "wss://nostr.sandwich.farm";
+  String relay = "wss://relay.dispute.systems";
   late WebSocketChannel channel;
 
   init() {
