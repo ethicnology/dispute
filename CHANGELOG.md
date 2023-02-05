@@ -19,4 +19,11 @@
 - refactor: tweet remove pseudonym placeholder
 
 ## 1.1.1
+
 - put my own relay as default
+
+## 1.1.2
+
+-  refactor: model and WebSocketChannel init/update
+
+
