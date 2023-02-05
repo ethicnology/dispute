@@ -8251,7 +8251,7 @@ aoD:function aoD(){},
 Ka:function Ka(a){this.a=a},
 l6:function l6(a,b){var _=this
 _.a=a
-_.b="wss://nostr.sandwich.farm"
+_.b="wss://relay.dispute.systems"
 _.c=$
 _.a9$=0
 _.ab$=b
