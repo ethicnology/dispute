@@ -1,25 +1,24 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:dispute/model/profile.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:nostr/nostr.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../constants/constants.dart';
 
-void sendEvent(Uri relay, Event event) {
+Future<void> sendEvent(Uri relay, Event event) async {
   WebSocketChannel channel = WebSocketChannel.connect(relay);
   channel.sink.add(event.serialize());
-  sleep(const Duration(seconds: 1));
-  channel.stream.listen((response) {
+  await Future.delayed(const Duration(seconds: 1));
+  channel.stream.listen((response) async {
+    await Future.delayed(const Duration(seconds: 1));
     if (response.isNotEmpty) {
-      var json = jsonDecode(response);
-      var msg = Message.deserialize(json);
-      if (msg.type == "OK") {
-      } else {
-        throw Exception(msg);
+      var msg = Message.deserialize(response);
+      Logger().i(msg.message);
+      if (msg.type != "OK") {
+        throw Exception(response);
       }
     } else {
       throw Exception("Empty response");
@@ -82,7 +81,8 @@ class EventScreenState extends State<EventScreen> {
                           privkey: profil.keys.private,
                         );
                         try {
-                          sendEvent(Uri.parse(profil.relay), event);
+                          await sendEvent(Uri.parse(profil.relay), event);
+                          if (!mounted) return;
                           displaySnackBar(context, "Event is sent");
                           Navigator.of(context).pop(false);
                         } catch (e) {
