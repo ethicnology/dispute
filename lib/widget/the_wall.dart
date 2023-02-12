@@ -42,7 +42,7 @@ class TheWallState extends State<TheWallWidget> {
   void initState() {
     super.initState();
     spams.clear();
-    logger.i('Connected to WebSocket at ${widget.channel.toString()}');
+    logger.i('Connected to WebSocket');
     widget.channel.sink.add(
       Request(generate64RandomHexChars(), [
         Filter(
@@ -70,20 +70,27 @@ class TheWallState extends State<TheWallWidget> {
           child: StreamBuilder(
             stream: widget.channel.stream,
             builder: (context, snapshot) {
+              logger.i(snapshot.connectionState);
+              logger.i(snapshot.data);
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               }
               if (!snapshot.hasData) {
-                return const Text('Waiting for data...');
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               }
-              var data = jsonDecode(snapshot.data);
-              if (data[0] == "EVENT") {
-                var event = Event.deserialize(data, verify: false);
+              Message msg = Message.deserialize(snapshot.data);
+              if (msg.type == "EVENT") {
+                Event event = msg.message;
                 if (!isSpam(event)) {
                   events.add(event);
                   events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
                 }
               }
+              logger.i(
+                'events loaded: ${events.length} spams filtered: ${spams.length}',
+              );
 
               return ListView.builder(
                 shrinkWrap: true,
