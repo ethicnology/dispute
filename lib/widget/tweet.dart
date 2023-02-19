@@ -47,14 +47,21 @@ class TweetWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
+                width: 46,
+                height: 46,
                 margin: const EdgeInsets.all(10.0),
                 child: InkWell(
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: buttonBorderColor,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Color(setColor()),
+                  child: ClipOval(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(setColor()),
+                      ),
+                      child: Image.network('$avatarUrl$pubkey.png?$imagesize',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                        debugPrint(error.toString());
+                        return const SizedBox.shrink();
+                      }),
                     ),
                   ),
                   onTap: () {
