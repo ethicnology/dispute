@@ -143,13 +143,14 @@ class ProfilScreenState extends State<ProfilScreen> {
                           },
                         ),
                       ),
+                    const Text("List of relays: https://nostr.info/relays/"),
                     TextFormField(
                       controller: relayInput,
                       keyboardType: TextInputType.url,
                       decoration: const InputDecoration(
                         labelText: 'Relay',
                         border: OutlineInputBorder(),
-                        hintText: 'wss://nostr.sandwich.farm',
+                        hintText: 'wss://nos.lol',
                       ),
                       validator: (value) {
                         if (!RegExp(r'^(ws|wss)://').hasMatch(value!)) {
