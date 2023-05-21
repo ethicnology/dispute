@@ -3,5 +3,5 @@ import 'package:nostr/nostr.dart';
 
 class Profile with ChangeNotifier {
   Keychain keys = Keychain.generate();
-  String relay = "wss://relay.dispute.systems";
+  String relay = "";
 }

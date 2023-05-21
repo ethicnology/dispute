@@ -46,12 +46,24 @@ class ProfilScreenState extends State<ProfilScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: ListView(children: [
-              CircleAvatar(
-                radius: 58,
-                backgroundColor: buttonBorderColor,
-                child: CircleAvatar(
-                  radius: 56,
-                  backgroundColor: Color(setColor()),
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: FittedBox(
+                  child: ClipOval(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(setColor()),
+                      ),
+                      child: Image.network(
+                          '$avatarUrl${pubkeyInput.text}.png?$imagesize',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                        debugPrint(error.toString());
+                        return const SizedBox.shrink();
+                      }),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -131,13 +143,14 @@ class ProfilScreenState extends State<ProfilScreen> {
                           },
                         ),
                       ),
+                    const Text("List of relays: https://nostr.info/relays/"),
                     TextFormField(
                       controller: relayInput,
                       keyboardType: TextInputType.url,
                       decoration: const InputDecoration(
                         labelText: 'Relay',
                         border: OutlineInputBorder(),
-                        hintText: 'wss://nostr.sandwich.farm',
+                        hintText: 'wss://nos.lol',
                       ),
                       validator: (value) {
                         if (!RegExp(r'^(ws|wss)://').hasMatch(value!)) {

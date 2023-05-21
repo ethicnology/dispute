@@ -1,5 +1,5 @@
 import 'package:dispute/model/profile.dart';
-import 'package:dispute/screen/home.dart';
+import 'package:dispute/screen/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
             .apply(bodyColor: Colors.white),
       ),
-      home: const HomeScreen(),
+      home: const ProfilScreen(),
     );
   }
 }
