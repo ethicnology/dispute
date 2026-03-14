@@ -1,0 +1,26 @@
+name: shell
+description: Dispute shell — host app with plugin architecture
+publish_to: none
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_interface:
+    path: ../../packages/plugin_interface
+  dispute:
+    path: ../dispute
+  zeronet:
+    path: ../zeronet
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

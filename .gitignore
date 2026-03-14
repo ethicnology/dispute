@@ -1,3 +1,21 @@
+# Flutter/Dart
+**/build/
+**/.dart_tool/
+.dart_tool/
+**/.packages
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
 
-# FVM Version Cache
+# FVM
 .fvm/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+
+# Melos
+pubspec.lock
