@@ -12,6 +12,10 @@ dependencies:
     sdk: flutter
   plugin_interface:
     path: ../../packages/plugin_interface
+  nostr_wrapper:
+    path: ../../packages/nostr
+  flutter_bloc:
+  web_socket: ^1.0.1
 
 dev_dependencies:
   flutter_test:
