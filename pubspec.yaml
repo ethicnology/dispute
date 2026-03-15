@@ -5,6 +5,11 @@ publish_to: none
 environment:
   sdk: ^3.11.0
 
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
+
 workspace:
   - apps/shell
   - apps/dispute
@@ -28,6 +33,12 @@ melos:
     format:
       exec: fvm dart format .
       description: Format all packages
+    codegen:
+      exec: fvm dart run build_runner build --delete-conflicting-outputs
+      description: Regenerate Drift code
+      packageFilters:
+        dependsOn:
+          - build_runner
     clean:
       exec: fvm flutter clean
       description: Clean all packages

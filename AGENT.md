@@ -10,13 +10,15 @@ Dispute is a cross-platform Nostr ecosystem built as a **melos monorepo** with a
 - **zeronet** — ZeroNet-on-Nostr experiment, injected as a plugin into the shell
 
 ### Packages
-- **core** — Shared infrastructure: plugin interface, Nostr primitives, theming, common widgets. No business logic.
+- **plugin_interface** — `AppPlugin` contract that each sub-app implements
+- **nostr** — Nostr abstraction layer wrapping `dart-nostr`. Import this instead of `dart-nostr` directly.
 
 ## Tech Stack
 
 - **Flutter** 3.41.x / **Dart** 3.11.x (pinned via FVM in `.fvmrc`)
 - **Melos** 7.4+ for monorepo management (config lives in root `pubspec.yaml` under `melos:` key — no `melos.yaml`)
 - **BLoC** (`flutter_bloc`) for state management
+- **Drift** (encrypted) for persistence
 - **Conventional Commits** for git history and automated changelogs
 - All 6 platforms: Android, iOS, macOS, Windows, Linux, Web
 
@@ -26,15 +28,17 @@ Dispute is a cross-platform Nostr ecosystem built as a **melos monorepo** with a
 dispute/
 ├── LICENSE                    # GPL-3.0
 ├── AGENT.md                   # this file
+├── README.md
 ├── .fvmrc                     # Flutter version pin
 ├── .gitignore
 ├── pubspec.yaml               # workspace root + melos config
 ├── apps/
-│   ├── shell/                 # host app (only runnable target)
-│   ├── dispute/               # nostr client plugin package
-│   └── zeronet/               # zeronet plugin package
+│   ├── shell/                 # host app (runnable, loads plugins)
+│   ├── dispute/               # nostr client plugin
+│   └── zeronet/               # zeronet plugin
 └── packages/
-    └── core/                  # shared infrastructure
+    ├── plugin_interface/      # AppPlugin contract
+    └── nostr/                 # Nostr abstraction layer
 ```
 
 ### Package Resolution
@@ -44,24 +48,11 @@ Every package in the workspace must declare `resolution: workspace` in its `pubs
 ## Getting Started
 
 ```bash
-# Use the pinned Flutter version
 fvm install
-fvm use
-
-# Install melos
 dart pub global activate melos
-
-# Bootstrap the workspace
 melos bootstrap
-
-# Run analysis
 melos run analyze
-
-# Run tests
 melos run test
-
-# Format code
-melos run format
 ```
 
 ## Shell + Plugin Architecture
@@ -69,18 +60,24 @@ melos run format
 The shell is independently buildable. Sub-apps are optional and toggled at build time via `--dart-define`:
 
 ```bash
-# Full build with all plugins
-fvm flutter run --dart-define=INCLUDE_DISPUTE=true --dart-define=INCLUDE_ZERONET=true
-
-# Shell only
-fvm flutter run --dart-define=INCLUDE_DISPUTE=false --dart-define=INCLUDE_ZERONET=false
+fvm flutter run --dart-define=INCLUDE_DISPUTE=true --dart-define=INCLUDE_ZERONET=true   # all plugins
+fvm flutter run --dart-define=INCLUDE_DISPUTE=false --dart-define=INCLUDE_ZERONET=false  # shell only
 ```
 
-Each plugin implements the `AppPlugin` interface from `core`.
+Each plugin implements the `AppPlugin` interface from `plugin_interface`.
 
 ## Architecture Rules
 
 This project follows **Clean Architecture** and **Hexagonal Architecture (Ports & Adapters)** with **feature-based organization**.
+
+### Feature vs Package
+
+- **Feature** — a folder inside an app's `lib/features/`. Internal to that app only. No `pubspec.yaml`.
+- **Package** — a reusable module under `packages/` with its own `pubspec.yaml`. Any app can depend on it.
+
+Rule: **start as a feature. Extract to a package only when a second consumer appears.**
+
+Packages should not own databases or concrete infrastructure. They define **ports** (interfaces) and let the consuming app provide **adapters** (implementations).
 
 ### Feature Structure
 
@@ -90,27 +87,52 @@ Each feature is a self-contained module:
 feature_name/
 ├── feature_name.dart              # barrel file — the ONLY public API (facade)
 ├── domain/
-│   ├── entities/                  # domain models with business rules (not DTOs)
-│   ├── domain_errors.dart         # sealed error types for this layer
-│   └── value_objects/
+│   ├── thing_entity.dart          # domain models with business rules (not DTOs)
+│   └── domain_errors.dart         # sealed error types for this layer
 ├── application/
-│   ├── ports/                     # inbound & outbound port interfaces
-│   ├── usecases/                  # orchestration of business operations
-│   ├── services/                  # shared logic across usecases (optional)
-│   └── application_errors.dart    # sealed error types for this layer
-├── interface_adapters/
-│   ├── repositories/              # secondary/driven adapters (outbound port impls)
-│   └── mappers/                   # data <-> domain mapping
-├── frameworks/
-│   ├── datasources/               # external deps (DB, API clients, drivers)
-│   └── models/                    # DTOs, persistence models
+│   ├── ports/
+│   │   └── thing_port.dart        # outbound port interfaces
+│   └── usecases/
+│       └── do_thing_use_case.dart # orchestration — calls domain + ports
+├── adapters/
+│   └── thing_sqlite.dart          # concrete port implementations (driven adapters)
 ├── presentation/
-│   ├── bloc/                      # BLoCs/Cubits — thin, delegate to usecases
-│   └── presentation_errors.dart   # sealed error types for this layer
+│   ├── thing_bloc.dart            # thin — delegates to usecases
+│   ├── thing_event.dart
+│   └── thing_state.dart
 └── ui/
-    ├── pages/
+    ├── thing_page.dart
     └── widgets/
+        └── thing_widget.dart
 ```
+
+**Folder rule:** only create a subfolder when it contains more than one file. Single files stay at the parent level.
+
+### Naming Conventions
+
+| Layer | Suffix | Example |
+|---|---|---|
+| Entity | `_entity.dart` | `account_entity.dart` |
+| Port | `_port.dart` | `account_port.dart` |
+| Use case | `_use_case.dart` | `generate_account_use_case.dart` |
+| Adapter | named by impl | `account_sqlite.dart`, `account_shared_preferences.dart` |
+| BLoC | `_bloc.dart` | `wizard_bloc.dart` |
+| Page | `_page.dart` | `wizard_page.dart` |
+| Widget | `_step.dart`, `_card.dart`, etc. | `account_step.dart` |
+
+### Domain vs Application
+
+**Domain** — pure business concepts. Zero dependencies (no Flutter, no packages, no IO).
+- What is an account? What rules govern it?
+- Entities, value objects, validation, business rules
+- If you can describe it without mentioning software, it's domain
+
+**Application** — orchestration of domain logic + coordination with external systems through ports.
+- "Generate keys, build account, save it, return it"
+- Usecases call domain objects and talk through ports
+- If it touches a port, it's application. If it's pure computation, it's domain.
+
+Rule: **if a usecase has zero ports and just calls domain objects, the logic should live in the entity instead.**
 
 ### Rules
 
@@ -120,8 +142,8 @@ feature_name/
 4. **BLoCs stay thin.** They only transform between UI state and usecase calls. No business logic.
 5. **Ports define needs, adapters fulfill them.** What vs how is clearly separated.
 6. **Each layer owns its error types.** Map errors at layer boundaries using sealed classes.
-7. **Core is infrastructure only.** No business logic — just primitives, drivers, and helpers.
-8. **Don't over-abstract.** Skip the datasource layer if a repository alone suffices.
+7. **Packages are infrastructure only.** No business logic — just primitives, drivers, and interfaces.
+8. **Don't over-abstract.** Skip layers if they add no value. Three lines of code > premature abstraction.
 9. **Widget state vs BLoC state.** Ephemeral UI state stays in StatefulWidget. BLoC is for business state.
 10. **Entities are not DTOs.** Domain models must encapsulate business rules, not mirror database schemas.
 
@@ -129,10 +151,11 @@ feature_name/
 
 - **Breaking feature boundaries** — never import another feature's internals. Use its barrel/facade.
 - **Business logic in presentation** — BLoCs should not contain orchestration or complex transformations.
-- **Bypassing the application layer** — watchers/adapters must go through usecases, not call repositories directly.
-- **Core module bloat** — don't put feature-specific logic in core.
+- **Bypassing the application layer** — adapters must go through usecases, not call other adapters directly.
+- **Package bloat** — don't put feature-specific logic in packages.
 - **Anemic domain models** — entities should encapsulate rules, not be plain data containers.
 - **State management confusion** — don't mix ephemeral widget state with BLoC state.
+- **Useless usecases** — if a usecase just delegates to one domain method with no ports, remove it.
 
 ## Git Conventions
 
@@ -142,12 +165,12 @@ Format: `type(scope): description`
 
 **Types:** `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`, `build`
 
-**Scopes:** `shell`, `dispute`, `zeronet`, `core`, `monorepo`
+**Scopes:** `shell`, `dispute`, `zeronet`, `plugin-interface`, `nostr`, `monorepo`
 
 **Examples:**
 ```
 feat(dispute): add relay connection management
-fix(core): handle null key in event signing
+fix(nostr): handle null key in event signing
 refactor(shell): extract plugin registry into separate class
 chore(monorepo): update melos scripts
 ```
@@ -165,8 +188,8 @@ chore(monorepo): update melos scripts
 
 ## Adding a New Feature
 
-1. Create the feature folder under the appropriate app's `lib/src/features/`
-2. Follow the feature structure above
+1. Create the feature folder under the app's `lib/features/`
+2. Follow the feature structure and naming conventions above
 3. Expose the public API via the barrel file only
 4. Write unit tests for usecases and domain entities
 5. Run `melos run analyze` and `melos run test` before committing
@@ -174,8 +197,16 @@ chore(monorepo): update melos scripts
 ## Adding a New Plugin App
 
 1. Create a new directory under `apps/`
-2. Add a `pubspec.yaml` with `resolution: workspace` and a dependency on `core`
-3. Implement the `AppPlugin` interface from `core`
+2. Add a `pubspec.yaml` with `resolution: workspace` and a dependency on `plugin_interface`
+3. Implement the `AppPlugin` interface
 4. Export the plugin via a barrel file
 5. Add the dependency and `--dart-define` toggle in the shell
-6. Add the workspace entry in root `pubspec.yaml` if not covered by the `apps/*` glob
+6. Add the workspace entry in root `pubspec.yaml`
+
+## Adding a New Package
+
+1. Create a new directory under `packages/`
+2. Add a `pubspec.yaml` with `resolution: workspace`
+3. Define ports (interfaces) — not concrete implementations
+4. Export via a barrel file
+5. Add the workspace entry in root `pubspec.yaml`

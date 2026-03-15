@@ -1,5 +1,6 @@
 # Flutter/Dart
 **/build/
+**/*.g.dart
 **/.dart_tool/
 .dart_tool/
 **/.packages
