@@ -1,5 +1,6 @@
 import 'package:dispute/dispute.dart';
 import 'package:flutter/material.dart';
+import 'package:nostr_wrapper/nostr.dart';
 import 'package:plugin_interface/plugin_interface.dart';
 import 'package:zeronet/zeronet.dart';
 
@@ -15,9 +16,11 @@ const _includeZeronet = bool.fromEnvironment(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final db = await NostrDatabase.open('tmp_hardcoded_key');
+
   final plugins = <AppPlugin>[
-    if (_includeDispute) DisputePlugin(),
-    if (_includeZeronet) ZeronetPlugin(),
+    if (_includeDispute) DisputePlugin(db: db),
+    if (_includeZeronet) ZeronetPlugin(db: db),
   ];
 
   for (final plugin in plugins) {

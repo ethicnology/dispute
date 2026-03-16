@@ -5,7 +5,10 @@ import 'package:plugin_interface/plugin_interface.dart';
 import 'package:wizard/wizard.dart';
 
 class DisputePlugin extends AppPlugin {
-  late NostrDatabase _db;
+  DisputePlugin({NostrDatabase? db}) : _injectedDb = db;
+
+  final NostrDatabase? _injectedDb;
+  late final NostrDatabase _db;
 
   @override
   String get id => 'dispute';
@@ -18,7 +21,7 @@ class DisputePlugin extends AppPlugin {
 
   @override
   Future<void> initialize() async {
-    _db = await NostrDatabase.open('tmp_hardcoded_key');
+    _db = _injectedDb ?? await NostrDatabase.open('tmp_hardcoded_key');
   }
 
   @override

@@ -15,9 +15,12 @@ class NostrDatabase extends _$NostrDatabase {
 
   static const _cipher = 'chacha20';
 
-  static Future<NostrDatabase> open(String encryptionKey) async {
+  static Future<NostrDatabase> open(
+    String encryptionKey, {
+    String name = 'nostr',
+  }) async {
     final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'nostr.db'));
+    final file = File(p.join(dir.path, '$name.db'));
     return NostrDatabase(
       NativeDatabase.createInBackground(
         file,

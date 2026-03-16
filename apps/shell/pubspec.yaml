@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   plugin_interface:
     path: ../../packages/plugin_interface
+  nostr_wrapper:
+    path: ../../packages/nostr
   dispute:
     path: ../dispute
   zeronet:
