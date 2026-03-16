@@ -23,11 +23,11 @@ class DisputePlugin extends AppPlugin {
 
   @override
   Widget buildHome(BuildContext context) {
+    final accountPort = NostrAccountAdapter(DriftAccountStorage(_db));
     return BlocProvider(
       create: (_) => WizardBloc(
-        createAccountUseCase: CreateAccountUseCase(
-          accountPort: NostrAccountAdapter(DriftAccountStorage(_db)),
-        ),
+        createAccountUseCase: CreateAccountUseCase(accountPort: accountPort),
+        getAccountsUseCase: GetAccountsUseCase(accountPort: accountPort),
       ),
       child: const WizardPage(),
     );

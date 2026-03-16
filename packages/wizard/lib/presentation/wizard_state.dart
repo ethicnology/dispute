@@ -1,5 +1,5 @@
 import 'account_view.dart';
-import 'relay_view.dart';
+import 'relay_view.dart'; // used by WizardInProgress
 
 enum WizardStep { keys, relays, profile }
 
@@ -19,9 +19,13 @@ class WizardInProgress extends WizardState {
   final List<RelayView> relays;
 }
 
-class WizardCompleted extends WizardState {
-  const WizardCompleted({required this.account});
-  final AccountView account;
+class WizardLoading extends WizardState {
+  const WizardLoading();
+}
+
+class WizardIdle extends WizardState {
+  const WizardIdle({required this.accounts});
+  final List<AccountView> accounts;
 }
 
 class WizardError extends WizardState {

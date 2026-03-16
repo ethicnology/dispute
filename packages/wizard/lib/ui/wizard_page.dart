@@ -13,12 +13,38 @@ class WizardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Setup')),
-      body: BlocBuilder<WizardBloc, WizardState>(
-        builder: (context, state) {
-          return switch (state) {
-            WizardInProgress(:final step) => Stepper(
+    return BlocBuilder<WizardBloc, WizardState>(
+      builder: (context, state) {
+        return switch (state) {
+          WizardLoading() => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          WizardIdle(:final accounts) => Scaffold(
+              appBar: AppBar(
+                title: const Text('Accounts'),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.person_add),
+                    tooltip: 'Add account',
+                    onPressed: () => context
+                        .read<WizardBloc>()
+                        .add(const WizardNewAccountRequested()),
+                  ),
+                ],
+              ),
+              body: ListView(
+                children: [
+                  for (final a in accounts)
+                    ListTile(
+                      title: Text(a.name),
+                      subtitle: Text(a.npub),
+                    ),
+                ],
+              ),
+            ),
+          WizardInProgress(:final step) => Scaffold(
+              appBar: AppBar(title: const Text('Setup')),
+              body: Stepper(
                 currentStep: step.index,
                 controlsBuilder: (context, details) => const SizedBox.shrink(),
                 steps: [
@@ -45,10 +71,9 @@ class WizardPage extends StatelessWidget {
                   ),
                 ],
               ),
-            WizardCompleted() => const Center(
-                child: Text('Account created!'),
-              ),
-            WizardError(:final message) => Center(
+            ),
+          WizardError(:final message) => Scaffold(
+              body: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -63,9 +88,9 @@ class WizardPage extends StatelessWidget {
                   ],
                 ),
               ),
-          };
-        },
-      ),
+            ),
+        };
+      },
     );
   }
 }

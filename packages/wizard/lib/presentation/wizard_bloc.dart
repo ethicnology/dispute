@@ -2,25 +2,53 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nostr_wrapper/nostr.dart';
 
 import '../application/create_account_use_case.dart';
+import '../application/get_accounts_use_case.dart';
 import '../domain/account_entity.dart';
 import 'account_view.dart';
+import 'relay_view.dart';
 import 'wizard_event.dart';
 import 'wizard_state.dart';
 
 class WizardBloc extends Bloc<WizardEvent, WizardState> {
-  WizardBloc({required this.createAccountUseCase})
-    : super(const WizardInProgress(step: WizardStep.keys)) {
+  WizardBloc({
+    required this.createAccountUseCase,
+    required this.getAccountsUseCase,
+  }) : super(const WizardLoading()) {
+    on<WizardStarted>(_onWizardStarted);
+    on<WizardNewAccountRequested>(_onWizardNewAccountRequested);
     on<KeysGenerateRequested>(_onKeysGenerateRequested);
     on<KeysImportRequested>(_onKeysImportRequested);
     on<RelaysSelected>(_onRelaysSelected);
     on<WizardSubmitted>(_onWizardSubmitted);
     on<WizardReset>(_onWizardReset);
+    add(const WizardStarted());
   }
 
   final CreateAccountUseCase createAccountUseCase;
+  final GetAccountsUseCase getAccountsUseCase;
 
   // Internal domain state — not exposed to UI
   Keys? _keys;
+
+  Future<void> _onWizardStarted(
+    WizardStarted event,
+    Emitter<WizardState> emit,
+  ) async {
+    final accounts = await getAccountsUseCase.execute();
+    if (accounts.isNotEmpty) {
+      emit(WizardIdle(accounts: _toViews(accounts)));
+    } else {
+      emit(const WizardInProgress(step: WizardStep.keys));
+    }
+  }
+
+  void _onWizardNewAccountRequested(
+    WizardNewAccountRequested event,
+    Emitter<WizardState> emit,
+  ) {
+    _keys = null;
+    emit(const WizardInProgress(step: WizardStep.keys));
+  }
 
   void _onKeysGenerateRequested(
     KeysGenerateRequested event,
@@ -71,25 +99,26 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
           .map((rv) => RelayEntity(url: rv.url, read: rv.read, write: rv.write))
           .toList();
 
-      final account = AccountEntity(
-        keys: _keys!,
-        name: event.name,
-        relays: relays,
+      await createAccountUseCase.execute(
+        account: AccountEntity(keys: _keys!, name: event.name, relays: relays),
       );
 
-      await createAccountUseCase.execute(account: account);
-
-      emit(
-        WizardCompleted(
-          account: AccountView(
-            npub: account.npub,
-            name: account.name,
-            relays: current.relays,
-          ),
-        ),
-      );
+      final accounts = await getAccountsUseCase.execute();
+      emit(WizardIdle(accounts: _toViews(accounts)));
     } on Exception catch (e) {
       emit(WizardError(message: e.toString()));
     }
   }
+
+  List<AccountView> _toViews(List<AccountEntity> entities) => entities
+      .map(
+        (e) => AccountView(
+          npub: e.npub,
+          name: e.name,
+          relays: e.relays
+              .map((r) => RelayView(url: r.url, read: r.read, write: r.write))
+              .toList(),
+        ),
+      )
+      .toList();
 }

@@ -31,3 +31,13 @@ class WizardSubmitted extends WizardEvent {
 class WizardReset extends WizardEvent {
   const WizardReset();
 }
+
+/// Dispatched automatically on BLoC init to check for existing accounts
+class WizardStarted extends WizardEvent {
+  const WizardStarted();
+}
+
+/// User requests adding a new account from the idle screen
+class WizardNewAccountRequested extends WizardEvent {
+  const WizardNewAccountRequested();
+}
