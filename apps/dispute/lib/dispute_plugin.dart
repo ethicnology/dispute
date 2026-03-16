@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nostr_wrapper/nostr.dart';
 import 'package:plugin_interface/plugin_interface.dart';
-
-import 'features/wizard/adapters/nostr_account_adapter.dart';
-import 'features/wizard/application/create_account_use_case.dart';
-import 'features/wizard/presentation/wizard_bloc.dart';
-import 'features/wizard/ui/wizard_page.dart';
+import 'package:wizard/wizard.dart';
 
 class DisputePlugin extends AppPlugin {
   late NostrDatabase _db;

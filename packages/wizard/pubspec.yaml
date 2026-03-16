@@ -1,7 +1,7 @@
-name: dispute
-description: A cross-platform Nostr client
+name: wizard
+description: Account setup wizard for Nostr-based apps
 publish_to: none
-version: 2.0.0+1
+version: 0.1.0+1
 resolution: workspace
 
 environment:
@@ -10,13 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_interface:
-    path: ../../packages/plugin_interface
-  nostr_wrapper:
-    path: ../../packages/nostr
-  wizard:
-    path: ../../packages/wizard
   flutter_bloc:
+  nostr_wrapper:
+    path: ../nostr
+  web_socket: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -16,6 +16,7 @@ workspace:
   - apps/zeronet
   - packages/plugin_interface
   - packages/nostr
+  - packages/wizard
 
 dev_dependencies:
   melos: ^7.4.0
