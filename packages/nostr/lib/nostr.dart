@@ -12,6 +12,7 @@ export 'package:nostr/nostr.dart' show Request, Close, Eose, Message;
 
 // NIPs — uncomment as needed
 // export 'package:nostr/nostr.dart' show Nip001, Nip002, Nip005;
+export 'package:nostr/nostr.dart' show DnsIdentifier, DnsData, Nip5, DNS;
 
 // Storage
 export 'storage/account_storage_port.dart';
