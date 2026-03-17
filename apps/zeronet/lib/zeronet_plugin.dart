@@ -4,7 +4,9 @@ import 'package:nostr_wrapper/nostr.dart';
 import 'package:plugin_interface/plugin_interface.dart';
 import 'package:wizard/wizard.dart';
 
-import 'features/website/website.dart';
+import 'features/leech/leech.dart';
+import 'features/seed/seed.dart';
+import 'ui/zeronet_home.dart';
 
 class ZeronetPlugin extends AppPlugin {
   ZeronetPlugin({NostrDatabase? db}) : _injectedDb = db;
@@ -28,8 +30,12 @@ class ZeronetPlugin extends AppPlugin {
 
   @override
   Widget buildHome(BuildContext context) {
-    final accountPort = NostrAccountAdapter(DriftAccountStorage(_db));
-    final websitePort = const AssetWebsiteAdapter();
+    final storage = DriftAccountStorage(_db);
+    final accountPort = NostrAccountAdapter(storage);
+    final seedPort = const NostrSeedAdapter();
+    final discoveryPort = const NostrDiscoveryAdapter();
+    final downloadPort = WebRtcDownloadAdapter(accountStorage: storage);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -41,14 +47,27 @@ class ZeronetPlugin extends AppPlugin {
           ),
         ),
         BlocProvider(
-          create: (_) => WebsiteBloc(
-            loadWebsiteUseCase: LoadWebsiteUseCase(websitePort: websitePort),
+          create: (_) => SeedBloc(
+            seedFileUseCase: SeedFileUseCase(seedPort: seedPort),
+            listSeedingUseCase: ListSeedingUseCase(seedPort: seedPort),
+            accountStorage: storage,
+          ),
+        ),
+        BlocProvider(
+          create: (_) => LeechBloc(
+            searchFilesUseCase: SearchFilesUseCase(
+              discoveryPort: discoveryPort,
+            ),
+            downloadFileUseCase: DownloadFileUseCase(
+              downloadPort: downloadPort,
+            ),
+            accountStorage: storage,
           ),
         ),
       ],
       child: BlocBuilder<WizardBloc, Object?>(
         builder: (context, state) {
-          if (state is WizardIdle) return const WebsitePage();
+          if (state is WizardIdle) return const ZeroNetHome();
           return const WizardPage();
         },
       ),

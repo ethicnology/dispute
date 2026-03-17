@@ -10,8 +10,12 @@ export 'package:nostr/nostr.dart' show Keys, Event, Filter;
 // Protocol
 export 'package:nostr/nostr.dart' show Request, Close, Eose, Message;
 
-// NIPs — uncomment as needed
-// export 'package:nostr/nostr.dart' show Nip001, Nip002, Nip005;
+// NIPs
+export 'package:nostr/nostr.dart'
+    show FileMetadata, FileMetadataData, Bech32Entities, Bech32Entity;
+
+// Relay
+export 'relay/nostr_relay.dart';
 
 // Storage
 export 'storage/account_storage_port.dart';

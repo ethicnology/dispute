@@ -37,7 +37,7 @@ class WizardPage extends StatelessWidget {
                   for (final a in accounts)
                     ListTile(
                       title: Text(a.name),
-                      subtitle: Text(a.npub),
+                      subtitle: SelectableText(a.npub),
                     ),
                 ],
               ),

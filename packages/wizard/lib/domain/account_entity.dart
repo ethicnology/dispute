@@ -5,8 +5,8 @@ class AccountEntity {
   final String name;
   final List<RelayEntity> relays;
 
-  String get npub => keys.public;
-  String get nsec => keys.secret;
+  String get npub => keys.npub;
+  String get nsec => keys.nsec;
 
   const AccountEntity({
     required this.keys,
