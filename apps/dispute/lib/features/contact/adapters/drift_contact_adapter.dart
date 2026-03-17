@@ -38,7 +38,7 @@ class DriftContactAdapter implements ContactPort {
   Future<List<ContactEntity>> fetchByName(String name) async {
     final rows = await (_db.select(
       _db.contactsTable,
-    )..where((t) => t.name.lower().like('%${name.toLowerCase()}%'))).get();
+    )..where((t) => t.name.lower().like('${name.toLowerCase()}%'))).get();
     return rows.map(_fromRow).toList();
   }
 
@@ -52,11 +52,12 @@ class DriftContactAdapter implements ContactPort {
 
   @override
   Future<ContactEntity?> search(String identifier) async {
-    final url = Nip5.verificationUrl(identifier);
-    final parts = identifier.split('@');
+    final parts = identifier.trim().split('@');
     if (parts.length != 2) return null;
-    final name = parts[0];
-    final domain = parts[1];
+    final name = parts[0].trim();
+    final domain = parts[1].trim();
+    if (name.isEmpty || domain.isEmpty) return null;
+    final url = Nip5.verificationUrl(identifier.trim());
 
     final client = http.Client();
     try {

@@ -1,6 +1,6 @@
 import 'package:dispute/features/contact/domain/contact_entity.dart';
 
-enum ContactScreen { search, myList, chat }
+enum ContactScreen { myList, chat }
 
 sealed class ContactState {
   const ContactState();
@@ -13,6 +13,7 @@ class ContactLoaded extends ContactState {
     this.foundContact,
     this.myContacts = const [],
     this.selectedPubkey,
+    this.showSearchButton = false,
   });
 
   /// Which screen the UI is showing
@@ -21,7 +22,7 @@ class ContactLoaded extends ContactState {
   /// Text user typed (nip05 / name / pubkey)
   final String input;
 
-  /// Result of NIP-05 search (single contact)
+  /// Result of NIP-05 search
   final ContactEntity? foundContact;
 
   /// Saved contacts list
@@ -29,6 +30,7 @@ class ContactLoaded extends ContactState {
 
   /// Currently selected contact (for chat/details)
   final String? selectedPubkey;
+  final bool showSearchButton;
 }
 
 /// Loading state (searching nip05, loading list, adding/removing contact, etc.)

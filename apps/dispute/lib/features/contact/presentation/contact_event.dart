@@ -4,33 +4,27 @@ sealed class ContactEvent {
   const ContactEvent();
 }
 
-/// User search for a new contact via identifier
-class SearchContact extends ContactEvent {
-  const SearchContact({required this.identifier});
-  final String identifier;
-}
-
 /// User presses "Add to my list" for the found contact
 final class AddContact extends ContactEvent {
   final ContactEntity contact;
   const AddContact(this.contact);
 }
 
-/// Load "my list" screen
+/// Load "my list" screen (no filter)
 final class LoadMyContacts extends ContactEvent {
   const LoadMyContacts();
 }
 
-/// User select a person from the list by name
-final class FetchMyContactsByName extends ContactEvent {
-  final String name;
-  const FetchMyContactsByName(this.name);
+/// Trigger a search while staying on the myList screen
+final class SearchContact extends ContactEvent {
+  const SearchContact({required this.identifier});
+  final String identifier;
 }
 
-/// User select a person from the list by pubkey
-final class FetchMyContactsByPubkey extends ContactEvent {
-  final String pubkey;
-  const FetchMyContactsByPubkey(this.pubkey);
+/// User filter contacts
+final class FilterContacts extends ContactEvent {
+  const FilterContacts(this.query);
+  final String query;
 }
 
 /// User selects a person from the list (open chat)

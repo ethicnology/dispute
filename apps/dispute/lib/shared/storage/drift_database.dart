@@ -17,7 +17,7 @@ class DisputeDatabase extends _$DisputeDatabase {
 
   static Future<DisputeDatabase> open(String encryptionKey) async {
     final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'nostr.db'));
+    final file = File(p.join(dir.path, 'dispute.db'));
     return DisputeDatabase(
       NativeDatabase.createInBackground(
         file,

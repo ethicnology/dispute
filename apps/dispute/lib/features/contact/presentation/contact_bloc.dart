@@ -1,7 +1,6 @@
 import 'package:dispute/features/contact/application/use_cases/add_contact_use_case.dart';
 import 'package:dispute/features/contact/application/use_cases/fetch_all_my_contacts_use_case.dart';
-import 'package:dispute/features/contact/application/use_cases/fetch_contact_by_name_use_case.dart';
-import 'package:dispute/features/contact/application/use_cases/fetch_contact_by_pubkey_use_case.dart';
+import 'package:dispute/features/contact/application/use_cases/fetch_contacts_use_case.dart';
 import 'package:dispute/features/contact/application/use_cases/remove_contact_use_case.dart';
 import 'package:dispute/features/contact/application/use_cases/search_contact_use_case.dart';
 import 'package:dispute/features/contact/presentation/contact_event.dart';
@@ -13,15 +12,13 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     required this.searchContactUseCase,
     required this.addContactUseCase,
     required this.fetchAllMyContactsUseCase,
-    required this.fetchContactByNameUseCase,
-    required this.fetchContactByPubkeyUseCase,
+    required this.fetchContactsUseCase,
     required this.removeContactUseCase,
   }) : super(const ContactLoading()) {
-    on<SearchContact>(_onSearchContact);
     on<AddContact>(_onAddContact);
     on<LoadMyContacts>(_onLoadMyContacts);
-    on<FetchMyContactsByName>(_onFetchMyContactsByName);
-    on<FetchMyContactsByPubkey>(_onFetchMyContactsByPubkey);
+    on<SearchContact>(_onSearchContact);
+    on<FilterContacts>(_onFilterContacts);
     on<SelectContact>(_onSelectContact);
     on<RemoveContact>(_onRemoveContact);
   }
@@ -29,31 +26,8 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
   final SearchContactUseCase searchContactUseCase;
   final AddContactUseCase addContactUseCase;
   final FetchAllMyContactsUseCase fetchAllMyContactsUseCase;
-  final FetchContactByNameUseCase fetchContactByNameUseCase;
-  final FetchContactByPubkeyUseCase fetchContactByPubkeyUseCase;
+  final FetchContactsUseCase fetchContactsUseCase;
   final RemoveContactUseCase removeContactUseCase;
-
-  Future<void> _onSearchContact(
-    SearchContact event,
-    Emitter<ContactState> emit,
-  ) async {
-    emit(const ContactLoading());
-    try {
-      final found = await searchContactUseCase.execute(event.identifier);
-      final current = state is ContactLoaded ? state as ContactLoaded : null;
-      emit(
-        ContactLoaded(
-          screen: ContactScreen.search,
-          input: event.identifier,
-          foundContact: found,
-          myContacts: current?.myContacts ?? const [],
-          selectedPubkey: current?.selectedPubkey,
-        ),
-      );
-    } on Exception catch (e) {
-      emit(ContactError(message: e.toString()));
-    }
-  }
 
   Future<void> _onAddContact(
     AddContact event,
@@ -82,18 +56,21 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     }
   }
 
-  Future<void> _onFetchMyContactsByName(
-    FetchMyContactsByName event,
+  Future<void> _onSearchContact(
+    SearchContact event,
     Emitter<ContactState> emit,
   ) async {
-    emit(const ContactLoading());
+    final current = state is ContactLoaded ? state as ContactLoaded : null;
     try {
-      final list = await fetchContactByNameUseCase.execute(event.name);
+      final found = await searchContactUseCase.execute(event.identifier);
       emit(
         ContactLoaded(
           screen: ContactScreen.myList,
-          input: event.name,
-          myContacts: list,
+          input: event.identifier,
+          foundContact: found,
+          myContacts: current?.myContacts ?? const [],
+          selectedPubkey: current?.selectedPubkey,
+          showSearchButton: found == null,
         ),
       );
     } on Exception catch (e) {
@@ -101,23 +78,32 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     }
   }
 
-  Future<void> _onFetchMyContactsByPubkey(
-    FetchMyContactsByPubkey event,
+  Future<void> _onFilterContacts(
+    FilterContacts event,
     Emitter<ContactState> emit,
   ) async {
-    emit(const ContactLoading());
+    final current = state is ContactLoaded ? state as ContactLoaded : null;
+    final text = event.query.trim();
     try {
-      final list = await fetchContactByPubkeyUseCase.execute(event.pubkey);
+      final list = await fetchContactsUseCase.execute(query: text);
+      final shouldShowSearchButton = list.isEmpty && _looksLikeNip05(text);
       emit(
         ContactLoaded(
           screen: ContactScreen.myList,
-          input: event.pubkey,
+          input: event.query,
           myContacts: list,
+          selectedPubkey: current?.selectedPubkey,
+          showSearchButton: shouldShowSearchButton,
         ),
       );
     } on Exception catch (e) {
       emit(ContactError(message: e.toString()));
     }
+  }
+
+  bool _looksLikeNip05(String text) {
+    final parts = text.split('@');
+    return parts.length == 2 && parts[0].isNotEmpty && parts[1].isNotEmpty;
   }
 
   void _onSelectContact(SelectContact event, Emitter<ContactState> emit) {
