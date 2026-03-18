@@ -2,14 +2,8 @@ import 'package:dispute/dispute.dart';
 import 'package:flutter/material.dart';
 import 'package:nostr_wrapper/nostr.dart';
 import 'package:plugin_interface/plugin_interface.dart';
-import 'package:zeronet/zeronet.dart';
-
 const _includeDispute = bool.fromEnvironment(
   'INCLUDE_DISPUTE',
-  defaultValue: true,
-);
-const _includeZeronet = bool.fromEnvironment(
-  'INCLUDE_ZERONET',
   defaultValue: true,
 );
 
@@ -20,7 +14,6 @@ void main() async {
 
   final plugins = <AppPlugin>[
     if (_includeDispute) DisputePlugin(db: db),
-    if (_includeZeronet) ZeronetPlugin(db: db),
   ];
 
   for (final plugin in plugins) {

@@ -16,8 +16,6 @@ dependencies:
     path: ../../packages/nostr
   dispute:
     path: ../dispute
-  zeronet:
-    path: ../zeronet
 
 dev_dependencies:
   flutter_test:
