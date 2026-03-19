@@ -2,6 +2,8 @@
 
 > **Warning**: This is a vibecoded proof of concept designed for the [SEC-06](https://sovereignengineering.io/) cohort to demo the idea. It is not reliable, not secure, and not suitable for production use.
 
+![demo](demo.gif)
+
 ## Background
 
 The original [ZeroNet](https://github.com/HelloZeroNet/ZeroNet) (18k+ stars on GitHub) was a pioneering decentralized web platform that used Bitcoin cryptography for identity and BitTorrent for P2P file distribution. It allowed anyone to publish uncensorable websites directly from their device. The project has been unmaintained since the disappearance of its creator, but its community remains active and the core idea — **websites served directly between peers with no central hosting** — is as relevant as ever.
