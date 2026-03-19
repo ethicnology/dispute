@@ -24,6 +24,13 @@ dependencies:
   crypto: ^3.0.6
   mime: ^2.0.0
   flutter_webrtc: ^0.12.12
+  namecoin:
+    git:
+      url: https://github.com/Cyrix126/namecoin_dart
+  electrum_adapter:
+    git:
+      url: https://github.com/cypherstack/electrum_adapter
+      ref: 0de864a35c71fce3a07e6a53b623619b32394b8d
 
 dev_dependencies:
   flutter_test:

@@ -6,6 +6,7 @@ import 'package:nostr_wrapper/nostr.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../adapters/namecoin_resolution_adapter.dart';
 import '../application/download_file_use_case.dart';
 import '../application/search_files_use_case.dart';
 import '../domain/downloaded_file.dart';
@@ -42,12 +43,17 @@ class LeechBloc extends Bloc<LeechEvent, LeechState> {
   ) async {
     emit(const LeechSearching());
     try {
+      var npub = event.npub;
+      if (!npub.startsWith('npub1')) {
+        npub = await NamecoinResolutionAdapter().resolve(npub);
+      }
+
       final accounts = await accountStorage.getAll();
       if (accounts.isEmpty) throw StateError('No account found');
       final relayUrls = _parseReadRelays(accounts.first.relaysJson);
 
       final results = await searchFilesUseCase.execute(
-        npub: event.npub,
+        npub: npub,
         relayUrls: relayUrls,
       );
       emit(LeechSearchResults(results: results));

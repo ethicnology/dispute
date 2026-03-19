@@ -37,7 +37,7 @@ class _LeechPageState extends State<LeechPage> {
           child: TextField(
             controller: _controller,
             decoration: InputDecoration(
-              hintText: 'Enter npub to search...',
+              hintText: 'npub or Namecoin name (e.g. alice, nostr/bob)',
               suffixIcon: IconButton(
                 icon: const Icon(Icons.search),
                 onPressed: _search,
@@ -98,7 +98,7 @@ class _LeechPageState extends State<LeechPage> {
               LeechError(:final message) => Center(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text('Error: $message', textAlign: TextAlign.center),
+                    child: SelectableText('Error: $message', textAlign: TextAlign.center),
                   ),
                 ),
             },

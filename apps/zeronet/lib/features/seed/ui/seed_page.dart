@@ -53,7 +53,7 @@ class SeedPage extends StatelessWidget {
                     ],
                   ),
           ),
-        SeedError(:final message) => Center(child: Text('Error: $message')),
+        SeedError(:final message) => Center(child: SelectableText('Error: $message')),
       },
     );
   }

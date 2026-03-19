@@ -18,6 +18,9 @@ workspace:
   - packages/nostr
   - packages/wizard
 
+dependency_overrides:
+  pointycastle: ^4.0.0
+
 dev_dependencies:
   melos: ^7.4.0
 
