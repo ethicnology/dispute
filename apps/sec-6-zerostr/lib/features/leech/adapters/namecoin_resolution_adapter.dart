@@ -9,7 +9,7 @@ class NamecoinResolutionAdapter {
 
   Future<String> resolve(String name) async {
     print('[namecoin] resolving "$name"');
-    final client = await ElectrumClient.connect(host: _host, port: _port);
+    final client = await ElectrumClient.connect(host: _host, port: _port, useSSL: true);
     await client.request('server.version', ['zeronet', '1.4']);
     try {
       final scriptHash = nameIdentifierToScriptHash(name);

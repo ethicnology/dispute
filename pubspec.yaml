@@ -13,7 +13,7 @@ hooks:
 workspace:
   - apps/shell
   - apps/dispute
-  - apps/zeronet
+  - apps/sec-6-zerostr
   - packages/plugin_interface
   - packages/nostr
   - packages/wizard
@@ -53,5 +53,5 @@ melos:
       run: cd apps/dispute && fvm flutter run
       description: Run the dispute app standalone
     run:zeronet:
-      run: cd apps/zeronet && fvm flutter run
+      run: cd apps/sec-6-zerostr && fvm flutter run
       description: Run the zeronet app standalone
