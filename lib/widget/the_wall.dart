@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:crypto/crypto.dart';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:dispute/main.dart';
 import 'package:dispute/widget/tweet.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ var spams = HashSet<String>();
 
 bool isSpam(Event event) {
   var toHash = utf8.encode(event.content);
-  String hash = sha256.convert(toHash).toString();
+  String hash = crypto.sha256.convert(toHash).toString();
   if (spams.contains(hash)) {
     logger.i("${event.id} is a filtered spam");
     return true;
@@ -44,12 +44,15 @@ class TheWallState extends State<TheWallWidget> {
     spams.clear();
     logger.i('Connected to WebSocket');
     widget.channel.sink.add(
-      Request(generate64RandomHexChars(), [
-        Filter(
-          kinds: [1],
-          since: currentUnixTimestampSeconds() - 86400,
-        )
-      ]).serialize(),
+      Request(
+        subscriptionId: generateRandomHex(),
+        filters: [
+          Filter(
+            kinds: const [1],
+            since: currentUnixTimestampSeconds() - 86400,
+          ),
+        ],
+      ).serialize(),
     );
   }
 

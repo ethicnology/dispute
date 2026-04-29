@@ -59,8 +59,23 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            TheWallWidget(
-              channel: WebSocketChannel.connect(Uri.parse(profil.relay)),
+            FutureBuilder<WebSocketChannel>(
+              future: connectRelay(Uri.parse(profil.relay)),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                if (snapshot.hasError || snapshot.data == null) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text('Failed to connect: ${snapshot.error ?? "unknown error"}'),
+                  );
+                }
+                return TheWallWidget(channel: snapshot.data!);
+              },
             ),
           ],
         ),

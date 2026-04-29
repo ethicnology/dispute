@@ -2,14 +2,14 @@ import 'package:dispute/model/profile.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:nostr/nostr.dart';
+import 'package:nostr/nostr.dart' hide Profile;
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../constants/constants.dart';
 
 Future<void> sendEvent(Uri relay, Event event) async {
-  WebSocketChannel channel = WebSocketChannel.connect(relay);
+  WebSocketChannel channel = await connectRelay(relay);
   channel.sink.add(event.serialize());
   await Future.delayed(const Duration(seconds: 1));
   channel.stream.listen((response) async {
@@ -73,12 +73,12 @@ class EventScreenState extends State<EventScreen> {
                       maximumSize: const Size(100, 50),
                     ),
                     onPressed: () async {
-                      if (profil.keys.private.length == 64) {
+                      if (profil.keys.secret.length == 64) {
                         Event event = Event.from(
                           kind: 1,
                           tags: [],
                           content: _controller.text,
-                          privkey: profil.keys.private,
+                          secretKey: profil.keys.secret,
                         );
                         try {
                           await sendEvent(Uri.parse(profil.relay), event);
