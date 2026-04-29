@@ -3,7 +3,7 @@ import 'package:dispute/model/profile.dart';
 import 'package:dispute/screen/home.dart';
 import 'package:dispute/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:nostr/nostr.dart';
+import 'package:nostr/nostr.dart' hide Profile;
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
@@ -26,7 +26,7 @@ class ProfilScreenState extends State<ProfilScreen> {
   Widget build(BuildContext context) {
     final profil = context.watch<Profile>();
     relayInput.text = profil.relay;
-    privkeyInput.text = profil.keys.private;
+    privkeyInput.text = profil.keys.secret;
     pubkeyInput.text = profil.keys.public;
 
     int setColor() {
@@ -100,7 +100,7 @@ class ProfilScreenState extends State<ProfilScreen> {
                           return 'Hex encoded private key should be 64 chars long';
                         }
                         try {
-                          Keychain(value);
+                          Keys(value);
                         } catch (e) {
                           String error =
                               "Private key not supported because of a bug in dart-bip340, github issue copied to your clipboard \nPlease try another one";
@@ -150,7 +150,7 @@ class ProfilScreenState extends State<ProfilScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Relay',
                         border: OutlineInputBorder(),
-                        hintText: 'wss://nos.lol',
+                        hintText: 'wss://nos.lol or wss://relay.testls.bit',
                       ),
                       validator: (value) {
                         if (!RegExp(r'^(ws|wss)://').hasMatch(value!)) {
@@ -172,7 +172,7 @@ class ProfilScreenState extends State<ProfilScreen> {
                         ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-                            profil.keys = Keychain(privkeyInput.text);
+                            profil.keys = Keys(privkeyInput.text);
                             pubkeyInput.text = profil.keys.public; // update UI
                             profil.relay = relayInput.text;
                             Navigator.of(context).push(MaterialPageRoute(
